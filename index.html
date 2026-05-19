@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Stash | Temas & Prioridade</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="phone">
+  <!-- SPLASH -->
+  <div class="screen" id="splash">
+    <div class="splash-noise"></div>
+    <div class="splash-content">
+      <img src="C:\Users\DELL\Desktop\Stash-anotações\img\logo.png" class="splash-icon" alt="Stash Logo">
+      <div class="splash-title">
+        Stash
+        <span>temas · prioridade instantânea</span>
+      </div>
+      <button class="btn-start" id="startBtn">Começar</button>
+    </div>
+  </div>
+ 
+  <!-- MAIN -->
+  <div class="screen hidden" id="main">
+    <div class="topbar">
+      <button class="btn-back" id="backBtn">‹</button>
+      <div class="topbar-title">Stash</div>
+      <button class="theme-btn" id="themeMenuBtn">🎨</button>
+      <div class="topbar-count" id="task-count">0 tasks</div>
+    </div>
+    
+ 
+    <div class="list-wrapper" id="task-list">
+      <div class="empty-state" id="empty-state">
+        <span class="emoji">✨</span>
+        Nenhuma task ainda.<br>Adicione sua primeira!
+      </div>
+    </div>
+ 
+    <div class="fab-area">
+      <div style="width:100%; display:flex; flex-direction:column; gap:8px;">
+        <div class="color-row" id="color-row"></div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <input class="fab-input" id="task-input" placeholder="Nova task..." maxlength="60" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="fab-btn" id="addBtn">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- TEMA MODAL -->
+  <div id="themeModal" class="theme-overlay">
+    <div class="theme-panel">
+      <h3>Temas</h3>
+      <p>Escolha seu estilo — as cores das suas tasks serão atualizadas</p>
+      <div id="themeListContainer" class="theme-list"></div>
+      <button class="close-theme-btn" id="closeThemeBtn">Fechar</button>
+    </div>
+  </div>
+ 
+  <div id="toastMsg" class="toast-msg"></div>
+</div>
+ 
+<script src="script.js"></script>
+</body>
+</html>
