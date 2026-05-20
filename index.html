@@ -34,13 +34,21 @@
       <button class="theme-btn" id="themeMenuBtn"><i class="bi bi-brush-fill"></i></button>
       <div class="topbar-count" id="task-count">0 tasks</div>
     </div>
-    
- 
-    <div class="empty-state" id="empty-state">
-      <i class="bi bi-stars empty-icon"></i>
-      <div class="empty-text">
-        Nenhuma task ainda.<br>Adicione sua primeira!
+
+    <!-- 1. Envolva tudo na estrutura de scroll que você criou no CSS -->
+    <div class="list-wrapper">
+      
+      <!-- O empty state fica aqui dentro -->
+      <div class="empty-state" id="empty-state">
+        <i class="bi bi-stars empty-icon"></i>
+        <div class="empty-text">
+          Nenhuma task ainda.<br>Adicione sua primeira!
+        </div>
       </div>
+
+      <!-- 2. AQUI ESTÁ A LISTA QUE O JAVASCRIPT ESTAVA PROCURANDO! -->
+      <div id="task-list"></div>
+
     </div>
  
     <div class="fab-area">
@@ -69,4 +77,4 @@
  
 <script src="script.js"></script>
 </body>
-</html>
+</html>  
