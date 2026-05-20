@@ -1,4 +1,3 @@
-// ======================== TEMAS PRÉ-DEFINIDOS ========================
 const THEMES = {
     "Vibrant Green": ["#32CD32", "#228B22", "#2E8B57", "#3CB371", "#90EE90"],
     "Warm Sunset": ["#DF3B57", "#EF8354", "#D8A47F", "#F9DF74", "#FF8C00"],
@@ -191,41 +190,54 @@ const THEMES = {
   
   // ======================== ADD TASK (sem toast de notificação, mantém ciclo de cores) ========================
   function addTask() {
-    const input = document.getElementById('task-input');
-    const text = input.value.trim();
-    if (!text) { 
-      input.focus(); 
-      return; 
-    }
-  
-    const newColor = getNextColor();
-    const newTask = { 
-      id: Date.now().toString(), 
-      text: text, 
-      color: newColor,
-      createdAt: Date.now()
-    };
-    
-    tasks.unshift(newTask);
-    save();
-  
-    const list = document.getElementById('task-list');
-    const empty = document.getElementById('empty-state');
-    if (empty) empty.style.display = 'none';
-    
-    const item = createItem(newTask);
-    item.classList.add('new');
-    list.insertBefore(item, list.firstChild);
-    updateCount();
-    
-    // atualiza o destaque da cor ativa (próxima cor)
-    advanceColorPickerUI();
-    
-    input.value = '';
-    input.focus();
-    
-    // Não exibe toast de criação (solicitação do usuário: "queria tirar aquela notificação")
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) { 
+    input.focus(); 
+    return; 
   }
+
+  const newColor = getNextColor();
+  const newTask = { 
+    id: Date.now().toString(), 
+    text: text, 
+    color: newColor,
+    createdAt: Date.now()
+  };
+  
+  tasks.unshift(newTask);
+  save();
+
+  const list = document.getElementById('task-list');
+  const empty = document.getElementById('empty-state');
+  
+  // Verifica se o empty existe e esconde
+  if (empty) {
+    empty.style.display = 'none';
+  }
+  
+  // Verifica se o list existe antes de tentar usar
+  if (!list) {
+    console.error('Lista não encontrada!');
+    return;
+  }
+  
+  const item = createItem(newTask);
+  item.classList.add('new');
+  
+  // Insere no início da lista
+  if (list.firstChild) {
+    list.insertBefore(item, list.firstChild);
+  } else {
+    list.appendChild(item);
+  }
+  
+  updateCount();
+  advanceColorPickerUI();
+  
+  input.value = '';
+  input.focus();
+}
   
   // ======================== DELETE TASK ========================
   function deleteTask(id) {
