@@ -405,7 +405,8 @@
     transform: scale(1.2);
   }
  
-  .empty-state {
+  /* ESTADO VAZIO CENTRALIZADO */
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
