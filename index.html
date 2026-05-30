@@ -17,7 +17,7 @@
   <div class="screen" id="splash">
     <div class="splash-noise"></div>
     <div class="splash-content">
-      <img src="img/logo.png" class="splash-icon" alt="Stash Logo">
+      <img src="img/logo.png" class="splash-icon" alt="logo-stash">
       <div class="splash-title">
         Stash
         <span>temas · prioridade instantânea</span>
@@ -35,20 +35,14 @@
       <div class="topbar-count" id="task-count">0 tasks</div>
     </div>
 
-    <!-- 1. Envolva tudo na estrutura de scroll que você criou no CSS -->
     <div class="list-wrapper">
-      
-      <!-- O empty state fica aqui dentro -->
       <div class="empty-state" id="empty-state">
         <i class="bi bi-stars empty-icon"></i>
         <div class="empty-text">
           Nenhuma task ainda.<br>Adicione sua primeira!
         </div>
       </div>
-
-      <!-- 2. AQUI ESTÁ A LISTA QUE O JAVASCRIPT ESTAVA PROCURANDO! -->
       <div id="task-list"></div>
-
     </div>
  
     <div class="fab-area">
@@ -57,6 +51,10 @@
         <div style="display:flex; gap:10px; align-items:center;">
           <input class="fab-input" id="task-input" placeholder="Nova task..." maxlength="60" autocomplete="off" autocorrect="off" spellcheck="false">
           <button class="fab-btn" id="addBtn">+</button>
+        </div>
+        <!-- Botão Reset na posição original (abaixo da barra de escrever) -->
+        <div style="display: flex; justify-content: center; margin-top: 8px;">
+          <button class="reset-btn" id="resetBtn"><i class="bi bi-trash3"></i> Reset</button>
         </div>
       </div>
     </div>
@@ -71,10 +69,7 @@
       <button class="close-theme-btn" id="closeThemeBtn">Fechar</button>
     </div>
   </div>
- 
-  <div id="toastMsg" class="toast-msg"></div>
 </div>
- 
-<script src="script.js"></script>
+<script src="script.js"></script>  
 </body>
-</html>  
+</html>
