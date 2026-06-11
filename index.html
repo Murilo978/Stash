@@ -52,7 +52,6 @@
           <input class="fab-input" id="task-input" placeholder="Nova task..." maxlength="60" autocomplete="off" autocorrect="off" spellcheck="false">
           <button class="fab-btn" id="addBtn">+</button>
         </div>
-        <!-- Botão Reset na posição original (abaixo da barra de escrever) -->
         <div style="display: flex; justify-content: center; margin-top: 8px;">
           <button class="reset-btn" id="resetBtn"><i class="bi bi-trash3"></i> Reset</button>
         </div>
@@ -67,6 +66,25 @@
       <p>Escolha seu estilo — as cores das suas tasks serão atualizadas</p>
       <div id="themeListContainer" class="theme-list"></div>
       <button class="close-theme-btn" id="closeThemeBtn">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE EDIÇÃO -->
+  <div id="editModal" class="edit-overlay">
+    <div class="edit-panel">
+      <h3><i class="bi bi-pencil-square"></i> Editar Task</h3>
+      <div class="edit-field">
+        <label>Título</label>
+        <textarea id="editTitle" rows="2" maxlength="100" placeholder="Digite o título..." style="resize: vertical; font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 12px 16px; border-radius: 20px; border: 1.5px solid #e0d0c0; width: 100%; outline: none; background: white; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;"></textarea>
+      </div>
+      <div class="edit-field">
+        <label>Descrição</label>
+        <textarea id="editDesc" rows="4" placeholder="Adicione uma descrição..."></textarea>
+      </div>
+      <div class="edit-buttons">
+        <button class="edit-cancel-btn" id="editCancelBtn">Cancelar</button>
+        <button class="edit-save-btn" id="editSaveBtn">Salvar</button>
+      </div>
     </div>
   </div>
 </div>
