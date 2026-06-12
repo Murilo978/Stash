@@ -158,9 +158,9 @@ const THEMES = {
       <div class="task-pill" style="background:${taskColor}">
         <span class="task-pill-text">${escHtml(task.text)} ${hasDescHint}</span>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="task-edit" data-id="${task.id}" title="Editar"><i class="bi bi-pencil-square"></i></button>
+          <button class="task-edit" data-id="${task.id}" title="Editar"><i class="bi bi-pencil-fill"></i></button>
           <span class="drag-handle">⠿</span>
-          <button class="task-delete" data-id="${task.id}" title="Remover">×</button>
+          <button class="task-delete" data-id="${task.id}" title="Remover"><i class="bi bi-trash-fill"></i></button>
         </div>
       </div>
     `;
@@ -168,13 +168,36 @@ const THEMES = {
     const pill = item.querySelector('.task-pill');
     const editBtn = item.querySelector('.task-edit');
     const deleteBtn = item.querySelector('.task-delete');
+    const dragHandle = item.querySelector('.drag-handle');
     
-    pill.addEventListener('touchstart', onDragStart, { passive: false });
-    pill.addEventListener('mousedown', onDragStart);
+    // ========== CORREÇÃO: Eventos de drag SOMENTE na alça ==========
+    dragHandle.addEventListener('touchstart', onDragStart, { passive: false });
+    dragHandle.addEventListener('mousedown', onDragStart);
+    
+    // ========== CORREÇÃO: Impede que o pill interfira nos botões ==========
+    pill.addEventListener('touchstart', (e) => {
+      // Se o toque NÃO foi na alça, NÃO inicia drag
+      if (!e.target.closest('.drag-handle')) {
+        e.stopPropagation();
+      }
+    });
+    
+    // ========== CORREÇÃO: Clique nos botões com TOQUE ==========
+    editBtn.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openEditModal(task.id);
+    });
     
     editBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       openEditModal(task.id);
+    });
+    
+    deleteBtn.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      deleteTask(task.id);
     });
     
     deleteBtn.addEventListener('click', (e) => {
@@ -316,11 +339,17 @@ const THEMES = {
   // ======================== DRAG & DROP ========================
   function onDragStart(e) {
     if (dragState) return;
+    
     e.preventDefault();
-    const item = e.currentTarget.closest('.task-item');
+    e.stopPropagation();
+    
+    const dragHandle = e.currentTarget;
+    const item = dragHandle.closest('.task-item');
     if (!item) return;
+    
     const touch = e.touches ? e.touches[0] : e;
     const rect = item.getBoundingClientRect();
+    
     item.classList.add('dragging');
     if (navigator.vibrate) navigator.vibrate(12);
     
@@ -328,15 +357,15 @@ const THEMES = {
       item, 
       id: item.dataset.id, 
       offsetY: touch.clientY - rect.top,
-      startY: touch.clientY, 
       currentY: touch.clientY, 
       clone: null
     };
     
     const clone = item.cloneNode(true);
-    clone.style.cssText = `position:fixed; left:${rect.left}px; top:${rect.top}px; width:${rect.width}px; z-index:999; pointer-events:none; transition:none; opacity:.97;`;
-    clone.querySelector('.task-delete')?.setAttribute('style', 'opacity:0');
-    clone.querySelector('.task-edit')?.setAttribute('style', 'opacity:0');
+    clone.style.cssText = `position:fixed; left:${rect.left}px; top:${rect.top}px; width:${rect.width}px; z-index:999; pointer-events:none; transition:none; opacity:.95;`;
+    clone.querySelectorAll('.task-edit, .task-delete, .drag-handle').forEach(el => {
+      if (el) el.style.opacity = '0';
+    });
     document.body.appendChild(clone);
     dragState.clone = clone;
     item.classList.add('placeholder');
@@ -353,6 +382,7 @@ const THEMES = {
   function onDragMove(e) {
     if (!dragState) return;
     e.preventDefault();
+    
     const touch = e.touches ? e.touches[0] : e;
     const dy = touch.clientY - dragState.currentY;
     dragState.currentY = touch.clientY;
@@ -387,6 +417,7 @@ const THEMES = {
   
   function onDragEnd(e) {
     if (!dragState) return;
+    
     document.removeEventListener('touchmove', onDragMove);
     document.removeEventListener('touchend', onDragEnd);
     document.removeEventListener('mousemove', onDragMove);
@@ -409,7 +440,6 @@ const THEMES = {
       save();
     }, 200);
   }
-  
   // ======================== UI HELPERS ========================
   function buildColorRow() {
     const row = document.getElementById('color-row');
