@@ -233,98 +233,187 @@ function createItem(task) {
     return item;
   }
 
-function startDrag(item, touch) {
-  if (dragState) return;
-  
-  const rect = item.getBoundingClientRect();
-  item.classList.add('dragging');
-  if (navigator.vibrate) navigator.vibrate(12);
-  
-  dragState = {
-    item, 
-    id: item.dataset.id, 
-    offsetY: touch.clientY - rect.top,
-    currentY: touch.clientY, 
-    clone: null
-  };
-  
-  const clone = item.cloneNode(true);
-  clone.style.cssText = `position:fixed; left:${rect.left}px; top:${rect.top}px; width:${rect.width}px; z-index:999; pointer-events:none; transition:none; opacity:.95;`;
-  document.body.appendChild(clone);
-  dragState.clone = clone;
-  item.classList.add('placeholder');
-  
-  if (touch.touches) {
-    document.addEventListener('touchmove', onDragMove, { passive: false });
-    document.addEventListener('touchend', onDragEnd);
-  } else {
-    document.addEventListener('mousemove', onDragMove);
-    document.addEventListener('mouseup', onDragEnd);
-  }
-}
-
-function onDragMove(e) {
-  if (!dragState) return;
-  e.preventDefault();
-  
-  const touch = e.touches ? e.touches[0] : e;
-  const dy = touch.clientY - dragState.currentY;
-  dragState.currentY = touch.clientY;
-  const cloneRect = dragState.clone.getBoundingClientRect();
-  dragState.clone.style.top = (cloneRect.top + dy) + 'px';
-  
-  const list = document.getElementById('task-list');
-  const items = [...list.querySelectorAll('.task-item:not(.placeholder)')];
-  const cloneCenterY = dragState.clone.getBoundingClientRect().top + dragState.clone.getBoundingClientRect().height / 2;
-  
-  let targetItem = null, insertBefore = false;
-  for (const it of items) {
-    const r = it.getBoundingClientRect();
-    const centerY = r.top + r.height / 2;
-    if (cloneCenterY < centerY) { 
-      targetItem = it; 
-      insertBefore = true; 
-      break; 
-    }
-    targetItem = it; 
-    insertBefore = false;
-  }
-  
-  const placeholder = list.querySelector('.task-item.placeholder');
-  if (targetItem && placeholder) {
-    if (insertBefore) list.insertBefore(placeholder, targetItem);
-    else targetItem.after(placeholder);
-  } else if (!items.length && placeholder) {
-    list.insertBefore(placeholder, list.firstChild);
-  }
-}
-
-function onDragEnd(e) {
-  if (!dragState) return;
-  
-  document.removeEventListener('touchmove', onDragMove);
-  document.removeEventListener('touchend', onDragEnd);
-  document.removeEventListener('mousemove', onDragMove);
-  document.removeEventListener('mouseup', onDragEnd);
-  
-  const { item, clone } = dragState;
-  dragState = null;
-  const placeholder = item;
-  const rect = placeholder.getBoundingClientRect();
-  clone.style.transition = 'top .2s cubic-bezier(.34,1.4,.64,1), left .2s';
-  clone.style.top = rect.top + 'px';
-  clone.style.left = rect.left + 'px';
-  
-  setTimeout(() => {
-    clone.remove();
-    item.classList.remove('dragging', 'placeholder');
+  function startDrag(item, touch) {
+    if (dragState) return;
+    
+    const rect = item.getBoundingClientRect();
+    item.classList.add('dragging');
+    if (navigator.vibrate) navigator.vibrate(12);
+    
+    // Calcula o offset do clique em relação ao topo do item
+    const offsetY = touch.clientY - rect.top;
+    
+    dragState = {
+      item: item,
+      id: item.dataset.id,
+      startY: touch.clientY,
+      currentY: touch.clientY,
+      offsetY: offsetY,
+      clone: null,
+      placeholder: null
+    };
+    
+    // Cria clone para feedback visual (segue o cursor)
+    const clone = item.cloneNode(true);
+    clone.style.cssText = `
+      position: fixed;
+      left: ${rect.left}px;
+      top: ${rect.top}px;
+      width: ${rect.width}px;
+      z-index: 9999;
+      pointer-events: none;
+      transition: none;
+      opacity: 0.9;
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    `;
+    clone.querySelectorAll('.task-edit, .task-delete').forEach(el => {
+      if (el) el.style.opacity = '0';
+    });
+    document.body.appendChild(clone);
+    dragState.clone = clone;
+    
+    // Esconde o item original
+    item.style.opacity = '0';
+    item.style.transition = 'none';
+    
+    // Cria placeholder do MESMO TAMANHO da task
+    const placeholder = document.createElement('div');
+    placeholder.className = 'drag-placeholder';
+    placeholder.style.height = rect.height + 'px';
+    placeholder.style.margin = '5px 0';
+    placeholder.style.borderRadius = '30px';
+    placeholder.style.background = 'rgba(255,255,255,0.15)';
+    placeholder.style.border = '2px dashed rgba(255,255,255,0.5)';
+    placeholder.style.transition = 'all 0.2s ease';
+    
+    // Remove o item e insere o placeholder no lugar
     const list = document.getElementById('task-list');
+    const itemIndex = [...list.children].indexOf(item);
+    item.remove();
+    
+    if (itemIndex >= 0 && itemIndex <= list.children.length) {
+      if (itemIndex === 0) {
+        list.insertBefore(placeholder, list.firstChild);
+      } else if (itemIndex >= list.children.length) {
+        list.appendChild(placeholder);
+      } else {
+        list.insertBefore(placeholder, list.children[itemIndex]);
+      }
+    } else {
+      list.appendChild(placeholder);
+    }
+    
+    dragState.placeholder = placeholder;
+    
+    // Eventos de movimento
+    if (touch.touches) {
+      document.addEventListener('touchmove', onDragMove, { passive: false });
+      document.addEventListener('touchend', onDragEnd);
+    } else {
+      document.addEventListener('mousemove', onDragMove);
+      document.addEventListener('mouseup', onDragEnd);
+    }
+  }
+  
+  function onDragMove(e) {
+    if (!dragState) return;
+    e.preventDefault();
+    
+    const touch = e.touches ? e.touches[0] : e;
+    const clone = dragState.clone;
+    const placeholder = dragState.placeholder;
+    
+    if (!clone || !placeholder) return;
+    
+    // Calcula a nova posição do clone baseado no offset do clique
+    const newY = touch.clientY - dragState.offsetY;
+    clone.style.top = newY + 'px';
+    
+    // Encontra onde inserir o placeholder baseado na posição do clone
+    const list = document.getElementById('task-list');
+    const allItems = [...list.querySelectorAll('.task-item, .drag-placeholder')];
+    const cloneCenterY = newY + (clone.offsetHeight / 2);
+    
+    let targetIndex = -1;
+    for (let i = 0; i < allItems.length; i++) {
+      const it = allItems[i];
+      if (it === placeholder) continue;
+      const rect = it.getBoundingClientRect();
+      const itemCenterY = rect.top + (rect.height / 2);
+      if (cloneCenterY < itemCenterY) {
+        targetIndex = i;
+        break;
+      }
+      targetIndex = i + 1;
+    }
+    
+    const currentIndex = [...list.children].indexOf(placeholder);
+    
+    if (targetIndex !== -1 && targetIndex !== currentIndex) {
+      // Move o placeholder suavemente
+      if (targetIndex > currentIndex) {
+        if (targetIndex < list.children.length) {
+          list.insertBefore(placeholder, list.children[targetIndex]);
+        } else {
+          list.appendChild(placeholder);
+        }
+      } else if (targetIndex < currentIndex) {
+        list.insertBefore(placeholder, list.children[targetIndex]);
+      }
+    }
+  }
+  
+  function onDragEnd(e) {
+    if (!dragState) return;
+    
+    document.removeEventListener('touchmove', onDragMove);
+    document.removeEventListener('touchend', onDragEnd);
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+    
+    const { item, clone, placeholder } = dragState;
+    
+    // Remove o clone
+    if (clone) clone.remove();
+    
+    // Remove o placeholder e insere o item original no lugar
+    const list = document.getElementById('task-list');
+    const placeholderIndex = [...list.children].indexOf(placeholder);
+    
+    placeholder.remove();
+    
+    // Restaura o item
+    item.style.opacity = '';
+    item.style.transition = '';
+    item.classList.remove('dragging', 'placeholder');
+    
+    // Insere o item na posição do placeholder
+    if (placeholderIndex >= 0 && placeholderIndex <= list.children.length) {
+      if (placeholderIndex === 0) {
+        list.insertBefore(item, list.firstChild);
+      } else if (placeholderIndex >= list.children.length) {
+        list.appendChild(item);
+      } else {
+        list.insertBefore(item, list.children[placeholderIndex]);
+      }
+    } else {
+      list.appendChild(item);
+    }
+    
+    // Animação suave de entrada
+    item.style.animation = 'slideIn 0.2s ease';
+    setTimeout(() => {
+      item.style.animation = '';
+    }, 200);
+    
+    // Atualiza a ordem das tasks
     const newOrder = [...list.querySelectorAll('.task-item')].map(el => el.dataset.id);
     tasks = newOrder.map(tid => tasks.find(t => t.id === tid)).filter(Boolean);
     save();
-  }, 200);
-}
-
+    
+    dragState = null;
+  }
 function renderAll() {
   const list = document.getElementById('task-list');
   const empty = document.getElementById('empty-state');
