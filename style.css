@@ -742,3 +742,29 @@
   .reset-btn.gangorra-animation {
     animation: gangorraReset 0.35s ease-in-out;
   }
+
+  /* Placeholder durante o drag */
+  .drag-placeholder {
+    margin: 5px 0;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.15);
+    border: 2px dashed rgba(255,255,255,0.5);
+    transition: all 0.2s ease;
+    animation: pulse 0.5s ease infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
