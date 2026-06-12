@@ -41,7 +41,6 @@ function loadStored() {
       currentThemeName = data.currentThemeName || "Warm Sunset";
       if (selectedColorIndex >= currentPalette.length) selectedColorIndex = 0;
       
-      // Garantir que todas as tasks tenham description
       tasks = tasks.map(t => ({ ...t, description: t.description || '' }));
     } else {
       tasks = [];
@@ -313,9 +312,15 @@ function saveEdit() {
   closeEditModal();
 }
 
-// ======================== DRAG & DROP ========================
+// ======================== DRAG & DROP CORRIGIDO ========================
 function onDragStart(e) {
   if (dragState) return;
+
+  // CORREÇÃO MOBILE: Se o clique/toque veio de um dos botões ou seus ícones, ignora o arrasto e deixa o clique rodar livre.
+  if (e.target.closest('.task-edit') || e.target.closest('.task-delete')) {
+    return; 
+  }
+
   e.preventDefault();
   const item = e.currentTarget.closest('.task-item');
   if (!item) return;
@@ -448,6 +453,7 @@ function goToSplash() {
   document.getElementById('splash').classList.remove('hidden');
 }
 
+// ======================== MODAL THEME ========================
 function openThemeModal() {
   buildThemeModal();
   document.getElementById('themeModal').classList.add('active');
@@ -457,7 +463,7 @@ function closeThemeModal() {
   document.getElementById('themeModal').classList.remove('active');
 }
 
-// ======================== EVENTOS ========================
+// ======================== EVENT SETUP ========================
 function setupEventListeners() {
   const startBtn = document.getElementById('startBtn');
   const backBtn = document.getElementById('backBtn');
