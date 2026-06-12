@@ -237,112 +237,105 @@
  
   .list-wrapper::-webkit-scrollbar { display: none; }
  
-  /* Layout da task: botões fora da pill */
-/* Container da task */
-.task-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-  touch-action: none;
-  user-select: none;
-}
-
-/* Pill da task (contém texto, lápis e alça) */
-.task-pill {
-  flex: 1;
-  height: 52px;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px 0 22px;
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  color: rgba(0,0,0,.75);
-  box-shadow: 0 3px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.4);
-  transition: box-shadow .2s, transform .2s, background .2s ease;
-  cursor: grab;
-  position: relative;
-  overflow: hidden;
-  gap: 8px;
-}
-
-.task-pill-text {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Botão de editar (DENTRO da pill) */
-.task-edit {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0,0,0,.15);
-  border: none;
-  color: rgba(255,255,255,.9);
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background .15s, transform .15s;
-}
-
-.task-edit i {
-  font-size: 14px;
-}
-
-.task-edit:active {
-  background: rgba(0,0,0,.35);
-  transform: scale(.9);
-}
-
-/* Alça de arrasto (DENTRO da pill) */
-.drag-handle {
-  font-size: 17px;
-  opacity: .5;
-  flex-shrink: 0;
-  cursor: grab;
-  padding: 8px 4px;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-  opacity: .8;
-}
-
-/* Botão de deletar (FORA da pill - lado direito) */
-.task-delete {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: rgba(0,0,0,.18);
-  border: none;
-  color: rgba(255,255,255,.85);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background .15s, transform .15s;
-}
-
-.task-delete:active {
-  background: rgba(0,0,0,.35);
-  transform: scale(.9);
-}
-
-.task-has-desc {
-  margin-left: 8px;
-  font-size: 12px;
-  opacity: 0.7;
-}
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    touch-action: none;
+    user-select: none;
+  }
+ 
+  .task-pill {
+    flex: 1;
+    height: 52px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: rgba(0,0,0,.75);
+    box-shadow: 0 3px 12px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.4);
+    transition: box-shadow .2s, transform .2s, background .2s ease;
+    cursor: grab;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .task-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.25) 0%, transparent 60%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+ 
+  .task-pill-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+ 
+  .drag-handle {
+    font-size: 17px;
+    opacity: .55;
+    flex-shrink: 0;
+    cursor: grab;
+  }
+ 
+  /* Botão de editar (ícone de lápis) */
+  .task-edit {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.18);
+    border: none;
+    color: rgba(255,255,255,.85);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .15s, transform .15s;
+  }
+ 
+  .task-edit:active {
+    background: rgba(0,0,0,.35);
+    transform: scale(.9);
+  }
+ 
+  .task-delete {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.18);
+    border: none;
+    color: rgba(255,255,255,.85);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .15s, transform .15s;
+  }
+ 
+  .task-delete:active {
+    background: rgba(0,0,0,.35);
+    transform: scale(.9);
+  }
+ 
+  .task-has-desc {
+    margin-left: 8px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
  
   @keyframes shake {
     0%, 100% { transform: rotate(0deg) scale(1.03); }
@@ -741,30 +734,4 @@
 
   .reset-btn.gangorra-animation {
     animation: gangorraReset 0.35s ease-in-out;
-  }
-
-  /* Placeholder durante o drag */
-  .drag-placeholder {
-    margin: 5px 0;
-    border-radius: 30px;
-    background: rgba(255,255,255,0.15);
-    border: 2px dashed rgba(255,255,255,0.5);
-    transition: all 0.2s ease;
-    animation: pulse 0.5s ease infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
